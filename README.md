@@ -1,4 +1,2 @@
 
-# Trying to develop something in C++
-
-#### OPENGL game engine
+# skeletal OPENGL project using CMake
