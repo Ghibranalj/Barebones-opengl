@@ -1,3 +1,8 @@
 .vscode/
 build/
 /.cache/
+/CMakeCache.txt
+/CMakeFiles/
+/GAME
+/cmake_install.cmake
+/compile_commands.json
