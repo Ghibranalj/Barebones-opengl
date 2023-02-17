@@ -18,8 +18,14 @@ file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 
 include_directories(src)
 
-
 message(STATUS SRC_FILES: ${SRC_FILES})
 
 add_executable(GAME ${SRC_FILES})
 target_link_libraries(GAME glfw OpenGL::GL GLEW::GLEW)
+
+
+# add run target
+add_custom_target(run
+    COMMAND GAME
+    DEPENDS GAME
+)
