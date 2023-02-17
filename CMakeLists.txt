@@ -1,6 +1,4 @@
-
 cmake_minimum_required(VERSION 3.7)
-
 
 project(OPENGL VERSION 1.0.0)
 
@@ -15,7 +13,6 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 link_libraries(${GLEW_LIBRARIES})
-
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 
