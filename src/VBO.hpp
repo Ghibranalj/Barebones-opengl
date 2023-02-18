@@ -3,7 +3,7 @@
 
 #include "interface.hpp"
 
-class VBO : public Bindable, public Attribute {
+class VBO : public Attribute {
   public:
     VBO(void *data, unsigned int v_size, unsigned int size, unsigned int type);
     ~VBO();

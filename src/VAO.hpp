@@ -5,15 +5,14 @@
 #include <GL/glew.h>
 #include <stddef.h>
 
-class VAO : public Bindable {
+class VAO {
   public:
     // methods
     VAO();
     ~VAO();
     void bind();
     void unbind();
-    void addAttribute(Bindable &buf, Attribute &attr, unsigned int index);
-
+    void addAttribute(Attribute &attr, unsigned int index);
   private:
     unsigned int id;
 };

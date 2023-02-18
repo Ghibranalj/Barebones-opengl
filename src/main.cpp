@@ -10,6 +10,7 @@
 
 #include "VAO.hpp"
 #include "VBO.hpp"
+#include "shaders.hpp"
 
 int main() {
 
@@ -60,42 +61,13 @@ int main() {
     delete[] vertices;
 
     auto vao = VAO();
-    vao.addAttribute(vbo, vbo, 0);
+    vao.addAttribute(vbo, 0);
 
-    const std::string vertex_shader = R"(
-        #version 450 core
-        layout (location = 0) in vec3 position;
-        void main() {
-            gl_Position = vec4(position.x, position.y, position.z, 1.0);
-        }
-    )";
-
-    const std::string fragment_shader = R"(
-        #version 450 core
-        out vec4 color;
-        void main() {
-            color = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-        }
-    )";
-
-    unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
-    auto vs_source = vertex_shader.c_str();
-    glShaderSource(vs, 1, &vs_source, NULL);
-    glCompileShader(vs);
-
-    unsigned int fs = glCreateShader(GL_FRAGMENT_SHADER);
-    auto fs_source = fragment_shader.c_str();
-    glShaderSource(fs, 1, &fs_source, NULL);
-    glCompileShader(fs);
-
-    unsigned int shader_prog = glCreateProgram();
-    glAttachShader(shader_prog, fs);
-    glAttachShader(shader_prog, vs);
-    glLinkProgram(shader_prog);
+    auto shaderp = ShaderProgram("basic.glsl");
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(shader_prog);
+        shaderp.use();
         vao.bind();
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);
