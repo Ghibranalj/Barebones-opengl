@@ -24,11 +24,15 @@ message(STATUS SRC_FILES: ${SRC_FILES})
 add_executable(GAME ${SRC_FILES})
 target_link_libraries(GAME glfw OpenGL::GL GLEW::GLEW)
 
+#glob everything in res
+add_custom_target(copy_resources ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${PROJECT_SOURCE_DIR}/res
+        ${PROJECT_BINARY_DIR}/res
+        COMMENT "Copying resources into binary directory")
 
-file(COPY res DESTINATION ${CMAKE_BINARY_DIR})
-
-# add run target
+add_dependencies(GAME copy_resources)# add run target
 add_custom_target(run
-    COMMAND GAME
+    COMMAND GAME || true
     DEPENDS GAME
 )
