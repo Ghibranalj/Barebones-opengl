@@ -1,13 +1,33 @@
 
-#include "log.h"
+#include "log.hpp"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <assert.h>
+#include <cstdlib>
+#include <fcntl.h>
+#include <fstream>
 #include <string>
 
-typedef unsigned int VBO_id;
-typedef unsigned int VAO_id;
+#include "VAO.hpp"
+#include "VBO.hpp"
 
 int main() {
+
+    LOG("Starting GLFW context, OpenGL 3.3");
+    // read /res/test.txt and log it
+
+    std::string path = "res/test.txt";
+    std::fstream file;
+
+    file.open(path, std::ios::in);
+
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            LOG(line);
+        }
+        file.close();
+    }
 
     if (!glfwInit()) {
         FATAL("Failed to initialize GLFW");
@@ -30,25 +50,17 @@ int main() {
     LOG("Renderer:" << renderer);
     LOG("OpenGL version supported: " << version);
 
-    float vertices[] =
-        //
-        {-0.5f, -0.5f, 0.0f,
-         //
-         0.5f, -0.5f, 0.0f,
-         //
-         0.0f, 0.5f, 0.0f};
+    float *vertices = new float[9]{
+        -0.5f, -0.5f, 0.0f, // left
+        0.5f,  -0.5f, 0.0f, // right
+        0.0f,  0.5f,  0.0f  // top
+    };
 
-    VBO_id vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    auto vbo = VBO(vertices, 3, sizeof(float) * 9, GL_FLOAT);
+    delete[] vertices;
 
-    VAO_id vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    auto vao = VAO();
+    vao.addAttribute(vbo, vbo, 0);
 
     const std::string vertex_shader = R"(
         #version 450 core
@@ -66,17 +78,17 @@ int main() {
         }
     )";
 
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+    unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
     auto vs_source = vertex_shader.c_str();
     glShaderSource(vs, 1, &vs_source, NULL);
     glCompileShader(vs);
 
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+    unsigned int fs = glCreateShader(GL_FRAGMENT_SHADER);
     auto fs_source = fragment_shader.c_str();
     glShaderSource(fs, 1, &fs_source, NULL);
     glCompileShader(fs);
 
-    int shader_prog = glCreateProgram();
+    unsigned int shader_prog = glCreateProgram();
     glAttachShader(shader_prog, fs);
     glAttachShader(shader_prog, vs);
     glLinkProgram(shader_prog);
@@ -84,7 +96,7 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shader_prog);
-        glBindVertexArray(vao);
+        vao.bind();
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);
         glfwPollEvents();
