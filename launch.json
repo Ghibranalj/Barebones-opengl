@@ -1,0 +1,7 @@
+{
+    "type": "gdb",
+    "request": "launch",
+    "name": "Launch GAME",
+    "program": "${workspaceFolder}/build/GAME",
+    "cwd": "${workspaceFolder}/build",
+}

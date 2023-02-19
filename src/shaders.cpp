@@ -1,4 +1,6 @@
+#define SHADERS_CPP
 #include "shaders.hpp"
+
 
 #include <GL/glew.h>
 #include <fstream>
@@ -19,8 +21,7 @@ ShaderProgram::ShaderProgram(std::string name){
 
 
     std::string line;
-    std::string * sources = new std::string[2];
-
+    std::string * sources = new std::string[N_SHADER_TYPES];
 
     ShaderType type = ShaderType::NONE;
 
@@ -33,6 +34,10 @@ ShaderProgram::ShaderProgram(std::string name){
             type = ShaderType::FRAGMENT;
             continue;
         }
+        if(line == GEOMETRY_HEADER){
+            type = ShaderType::GEOMETRY;
+            continue;
+        }
         if (type == ShaderType::NONE){
             continue;
         }
@@ -43,9 +48,10 @@ ShaderProgram::ShaderProgram(std::string name){
 
     this->programID = glCreateProgram();
 
-    unsigned int TYPE[2] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
-    std::string TYPE_NAME[2] = {"VERTEX", "FRAGMENT"};
-    for (int i = 0 ; i < 2 ; i++){
+    for (int i = 0 ; i < N_SHADER_TYPES ; i++){
+        if (sources[i].empty()){
+            continue;
+        }
         this->shaderIDs[i] = glCreateShader(TYPE[i]);
         const char * source = this->shaderSources[i].c_str();
         glShaderSource(this->shaderIDs[i], 1, &source, NULL);
@@ -56,13 +62,11 @@ ShaderProgram::ShaderProgram(std::string name){
         char infoLog[512];
         glGetShaderiv(this->shaderIDs[i], GL_COMPILE_STATUS, &success);
 
-        if(!success)
-        {
+        if(!success){
             glGetShaderInfoLog(this->shaderIDs[i], 512, NULL, infoLog);
             FATAL("ERROR::SHADER::" + TYPE_NAME[i] + "::COMPILATION_FAILED " + infoLog);
         }
 
-        // attach shader to program
         glAttachShader(this->programID, this->shaderIDs[i]);
     }
 

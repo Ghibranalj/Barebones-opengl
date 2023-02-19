@@ -17,16 +17,20 @@
     std::cerr << __FILENAME__ << ":" << __LINE__ << " " << x << std::endl;
 
 #define FATAL(x)                                                               \
-    std::cerr << __FILENAME__ << ":" << __LINE__ << " " << x << std::endl;     \
-    exit(1);
+    {                                                                          \
+        std::cerr << __FILENAME__ << ":" << __LINE__ << " " << x << std::endl; \
+        exit(1);                                                               \
+    }
 
 #else // RELEASE
 #define LOG(x)
 #define ERROR(x)
 
 #define FATAL(x)                                                               \
-    std::cerr << x << std::endl;                                               \
-    exit(1);
+    {                                                                          \
+        std::cerr << x << std::endl;                                           \
+        exit(1);                                                               \
+    }
 #endif // RELEASE
 
 #endif // LOG_H_

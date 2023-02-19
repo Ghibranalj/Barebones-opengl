@@ -1,34 +1,17 @@
 
-#include "log.hpp"
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <assert.h>
-#include <cstdlib>
-#include <fcntl.h>
-#include <fstream>
-#include <string>
-
 #include "VAO.hpp"
 #include "VBO.hpp"
+#include "gl.hpp"
+#include "log.hpp"
 #include "shaders.hpp"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <string>
+
+typedef unsigned int VBO_id;
+typedef unsigned int VAO_id;
 
 int main() {
-
-    LOG("Starting GLFW context, OpenGL 3.3");
-    // read /res/test.txt and log it
-
-    std::string path = "res/test.txt";
-    std::fstream file;
-
-    file.open(path, std::ios::in);
-
-    if (file.is_open()) {
-        std::string line;
-        while (std::getline(file, line)) {
-            LOG(line);
-        }
-        file.close();
-    }
 
     if (!glfwInit()) {
         FATAL("Failed to initialize GLFW");
@@ -51,25 +34,31 @@ int main() {
     LOG("Renderer:" << renderer);
     LOG("OpenGL version supported: " << version);
 
-    float *vertices = new float[9]{
-        -0.5f, -0.5f, 0.0f, // left
-        0.5f,  -0.5f, 0.0f, // right
-        0.0f,  0.5f,  0.0f  // top
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(GLDebugMessageCallback, NULL);
+
+    float rect[] = {
+        -0.5f, -0.5f, 0.0f, //
+        0.5f,  -0.5f, 0.0f, //
+        0.5f,  0.5f,  0.0f, //
+        -0.5f, 0.5f,  0.0f  //
     };
 
-    auto vbo = VBO(vertices, 3, sizeof(float) * 9, GL_FLOAT);
-    delete[] vertices;
-
+    auto vbo = VBO(rect, 3, sizeof(rect), GL_FLOAT);
     auto vao = VAO();
-    vao.addAttribute(vbo, 0);
+    std::vector<unsigned int> indices = {0, 1, 2, 0, 2, 3};
 
-    auto shaderp = ShaderProgram("basic.glsl");
+    vao.addAttribute(vbo, 0);
+    auto idx = vao.addIndexBuffer(indices);
+    vao.attachIndexBuffer(idx);
+
+    auto shader = ShaderProgram("basic.glsl");
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
-        shaderp.use();
+        shader.use();
         vao.bind();
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
