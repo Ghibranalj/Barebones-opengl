@@ -30,13 +30,13 @@ int main() {
     LOG("Renderer:" << renderer);
     LOG("OpenGL version supported: " << version);
 
-    float vertices[] =
-        //
-        {-0.5f, -0.5f, 0.0f,
-         //
-         0.5f, -0.5f, 0.0f,
-         //
-         0.0f, 0.5f, 0.0f};
+    // rectangle vertices
+    float vertices[] = {
+        -0.5f, -0.5f, 0.0f, // buttom left
+        0.5f,  -0.5f, 0.0f, // buttom right
+        0.5f,  0.5f,  0.0f, // top right
+        -0.5f, 0.5f,  0.0f  // top left
+    };
 
     VBO_id vbo;
     glGenBuffers(1, &vbo);
@@ -50,6 +50,16 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
+    unsigned int IB = 0 ;
+    glGenBuffers(1, &IB);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
+
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     const std::string vertex_shader = R"(
         #version 450 core
         layout (location = 0) in vec3 position;
@@ -85,7 +95,8 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shader_prog);
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
