@@ -4,6 +4,7 @@
 #include "gl.h"
 #include "log.hpp"
 #include "shaders.hpp"
+#include "texture.hpp"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <math.h>
@@ -35,21 +36,22 @@ int main() {
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(GLDebugMessageCallback, NULL);
 
-    // layout:
-    // X, Y, Z, R, G, B, A, TexX, TexY
     std::vector<float> rect = {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, //
-        0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, //
-        0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f, //
-        -0.5f, 0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f, //
+        //  (x,y,z)   (r,g,b)   (Tx,Ty)
+        -0.5f, -0.5f, 0.0f, /**/ 1.0f, 0.0f, 0.0f, 1.0f, /**/ 0.0f, 0.0f, //
+        0.5f,  -0.5f, 0.0f, /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 1.0f, 0.0f, //
+        0.5f,  0.5f,  0.0f, /**/ 0.0f, 0.0f, 1.0f, 1.0f, /**/ 1.0f, 1.0f, //
+        -0.5f, 0.5f,  0.0f, /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 0.0f, 1.0f  //
     };
 
     auto vbo = VBO(rect);
 
-
     auto vao = VAO();
-    vao.addAttribute(vbo, 0, 3, 7, 0);
-    vao.addAttribute(vbo, 1, 4, 7, 3);
+    vao.addAttribute(vbo, 0, 3, 9, 0);
+    vao.addAttribute(vbo, 1, 4, 9, 3);
+    vao.addAttribute(vbo, 2, 2, 9, 7);
+
+    auto texture = Texture("res/face.png");
 
     std::vector<unsigned int> indices = {0, 1, 2, 0, 2, 3};
     auto idx = vao.addIndexBuffer(indices);
@@ -63,8 +65,9 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
         shader.use();
-
         shader.setUniformFloat(uLoc, frame);
+
+        texture.bind();
         vao.bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);
@@ -76,4 +79,3 @@ int main() {
     glfwTerminate();
     return 0;
 }
-
