@@ -6,6 +6,7 @@ SHELL := /bin/bash
 RM    := \rm -rf
 MKDIR := mkdir -p
 MAKE  := make --no-print-directory
+src_files := $(shell find src -name '*.cpp' -or -name '*c' -or -name '*.h' -or -name '*.hpp')
 
 all: ./build/Makefile
 	@$(MAKE) -C ./build
@@ -13,7 +14,7 @@ all: ./build/Makefile
 run: all
 	 @$(MAKE) -C ./build run || true
 
-./build/Makefile:
+./build/Makefile: $(src_files)
 	@($(MKDIR) build > /dev/null)
 	@(cd build > /dev/null 2>&1 && cmake ..)
 

@@ -20,18 +20,15 @@ void VAO::unbind() {
     glBindVertexArray(0);
 }
 
-void VAO::addAttribute(Attribute &attr, unsigned int index) {
-
-    auto size = attr.size();
-    auto type = attr.type();
-    auto stride = attr.stride();
-    auto offset = attr.offset();
-
+void VAO::addAttribute(VBO &attr, unsigned int index, unsigned int v_size,
+                       unsigned int stride, unsigned int offset) {
     this->bind();
     attr.bind();
     glEnableVertexAttribArray(index);
     glBindBuffer(GL_ARRAY_BUFFER, 1);
-    glVertexAttribPointer(index, size, type, GL_FALSE, stride, NULL);
+    glVertexAttribPointer(index, v_size, GL_FLOAT, GL_FALSE,
+                          stride * sizeof(float),
+                          (void *)(offset * sizeof(float)));
     attr.unbind();
     this->unbind();
 }

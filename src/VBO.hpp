@@ -2,27 +2,13 @@
 #define VBO_H_
 
 #include "interface.hpp"
-
-class VBO : public Attribute {
+#include <vector>
+class VBO : public Bindable {
   public:
-    VBO(void *data, unsigned int v_size, unsigned int size, unsigned int type);
+    VBO(std::vector<float> &data);
     ~VBO();
     void bind();
     void unbind();
-
-    inline size_t size() {
-        return this->v_size;
-    }
-    inline size_t stride() {
-        return this->_stride;
-    }
-    inline size_t offset() {
-        return this->_offset;
-    }
-
-    inline unsigned int type() {
-        return this->_type;
-    }
 
   private:
     unsigned int id;

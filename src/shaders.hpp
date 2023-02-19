@@ -28,13 +28,18 @@ class ShaderProgram {
     void use();
     void unuse();
 
-    inline void printShaderSources() {
+    int getUniformLocation(std::string uniformName);
+    void setUniformFloat(int location, float value);
+    void setUniformUint(int location, unsigned int value);
 
+    inline void printShaderSources() {
         std::cout << "Vertex Shader Source:" << this->shaderSources[0]
                   << std::endl;
         std::cout << "Fragment Shader Source:" << this->shaderSources[1]
                   << std::endl;
     }
+
+    void bindUniform();
 
   private:
     unsigned int programID;

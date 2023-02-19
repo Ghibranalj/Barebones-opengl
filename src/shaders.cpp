@@ -79,11 +79,30 @@ ShaderProgram::~ShaderProgram(){
     glDeleteProgram(this->programID);
 }
 
-
 void ShaderProgram::use(){
     glUseProgram(this->programID);
 }
 
 void ShaderProgram::unuse(){
     glUseProgram(0);
+}
+
+
+int ShaderProgram::getUniformLocation(std::string name){
+    return glGetUniformLocation(this->programID, name.c_str());
+}
+
+void ShaderProgram::setUniformFloat(int location, float value){
+    if (location == -1){
+        return;
+    }
+    glUniform1f(location, value);
+}
+
+
+void ShaderProgram::setUniformUint(int location, unsigned int value){
+    if (location == -1){
+        return;
+    }
+    glUniform1ui(location, value);
 }

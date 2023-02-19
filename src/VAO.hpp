@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <stddef.h>
 #include <vector>
+#include "VBO.hpp"
 
 class VAO {
   public:
@@ -13,7 +14,8 @@ class VAO {
     ~VAO();
     void bind();
     void unbind();
-    void addAttribute(Attribute &attr, unsigned int index);
+    void addAttribute(VBO &attr, unsigned int index, unsigned int v_size,
+                      unsigned int stride, unsigned int offset);
     unsigned int addIndexBuffer(std::vector<unsigned int> &ib);
     void attachIndexBuffer(unsigned int index);
 

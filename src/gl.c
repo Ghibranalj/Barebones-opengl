@@ -1,7 +1,8 @@
-#include "gl.hpp"
+#include "gl.h"
 #include <GL/glew.h>
-
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 void GLDebugMessageCallback(GLenum source, GLenum type, GLuint id,
                             GLenum severity, GLsizei length,
@@ -89,6 +90,7 @@ void GLDebugMessageCallback(GLenum source, GLenum type, GLuint id,
 
         case GL_DEBUG_SEVERITY_NOTIFICATION:
         _severity = "NOTIFICATION";
+        return;
         break;
 
         default:
@@ -96,7 +98,9 @@ void GLDebugMessageCallback(GLenum source, GLenum type, GLuint id,
         break;
     }
 
-
     printf("OPENGL %s: %s\n", _type ,msg);
 
+    if (strcmp(_severity, "HIGH") == 0 || strcmp(_severity, "MEDIUM") == 0) {
+        exit(1);
+    }
 }

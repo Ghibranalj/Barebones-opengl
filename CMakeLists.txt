@@ -15,13 +15,15 @@ find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 link_libraries(${GLEW_LIBRARIES})
 
-file(GLOB_RECURSE SRC_FILES "src/*.cpp")
+set(INCLUDE_DIRS  "src")
+add_subdirectory(vendor)
 
-include_directories(src)
+file(GLOB_RECURSE SRCPP_FILES "src/*.cpp")
+file(GLOB_RECURSE SRC_FILES "src/*.c")
 
+include_directories(${INCLUDE_DIRS})
 message(STATUS SRC_FILES: ${SRC_FILES})
-
-add_executable(GAME ${SRC_FILES})
+add_executable(GAME ${SRC_FILES} ${SRCPP_FILES})
 target_link_libraries(GAME glfw OpenGL::GL GLEW::GLEW)
 
 #glob everything in res

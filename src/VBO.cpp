@@ -1,21 +1,19 @@
 
 #include <GL/glew.h>
 #include "VBO.hpp"
+#include <vector>
 
-VBO::VBO(void *data, unsigned int v_size ,unsigned int size, unsigned int type) {
-
+VBO::VBO(std::vector<float> &data) {
     unsigned int id;
     glGenBuffers(1, &id);
     glBindBuffer(GL_ARRAY_BUFFER, id);
-    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     this->id = id;
-    this->v_size = v_size;
-    this->_type = type;
-    this->_stride = 0;
-    this->_offset = 0;
+    this->_type = GL_FLOAT;
 }
+
 VBO::~VBO() {
     glDeleteBuffers(1, &this->id);
 }

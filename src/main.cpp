@@ -1,15 +1,13 @@
 
 #include "VAO.hpp"
 #include "VBO.hpp"
-#include "gl.hpp"
+#include "gl.h"
 #include "log.hpp"
 #include "shaders.hpp"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <math.h>
 #include <string>
-
-typedef unsigned int VBO_id;
-typedef unsigned int VAO_id;
 
 int main() {
 
@@ -37,33 +35,45 @@ int main() {
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(GLDebugMessageCallback, NULL);
 
-    float rect[] = {
-        -0.5f, -0.5f, 0.0f, //
-        0.5f,  -0.5f, 0.0f, //
-        0.5f,  0.5f,  0.0f, //
-        -0.5f, 0.5f,  0.0f  //
+    // layout:
+    // X, Y, Z, R, G, B, A, TexX, TexY
+    std::vector<float> rect = {
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, //
+        0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, //
+        0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f, //
+        -0.5f, 0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f, //
     };
 
-    auto vbo = VBO(rect, 3, sizeof(rect), GL_FLOAT);
-    auto vao = VAO();
-    std::vector<unsigned int> indices = {0, 1, 2, 0, 2, 3};
+    auto vbo = VBO(rect);
 
-    vao.addAttribute(vbo, 0);
+
+    auto vao = VAO();
+    vao.addAttribute(vbo, 0, 3, 7, 0);
+    vao.addAttribute(vbo, 1, 4, 7, 3);
+
+    std::vector<unsigned int> indices = {0, 1, 2, 0, 2, 3};
     auto idx = vao.addIndexBuffer(indices);
     vao.attachIndexBuffer(idx);
 
     auto shader = ShaderProgram("basic.glsl");
 
+    auto uLoc = shader.getUniformLocation("u_time");
+
+    float frame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
         shader.use();
+
+        shader.setUniformFloat(uLoc, frame);
         vao.bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);
         glfwPollEvents();
+        frame += 0.01f;
     }
 
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }
+
