@@ -55,20 +55,15 @@ int main() {
     std::vector<unsigned int> indices = {0, 1, 2, 0, 2, 3};
     auto idx = vao.addIndexBuffer(indices);
     vao.attachIndexBuffer(idx);
-
     auto shader = ShaderProgram("basic.glsl");
-
-    auto uLoc = shader.getUniformLocation("u_time");
-
     float frame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
         shader.use();
-        shader.setUniformFloat(uLoc, frame);
-
+        shader.setUniformF("u_time", frame);
         texture.bind();
-        vao.bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        vao.draw();
         glfwSwapBuffers(window);
         glfwPollEvents();
         frame += 0.01f;

@@ -10,6 +10,8 @@ set(CMAKE_BUILD_TYPE Debug)
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
+set(glm_DIR /lib/cmake/glm)
+find_package(glm REQUIRED)
 
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
@@ -24,7 +26,7 @@ file(GLOB_RECURSE SRC_FILES "src/*.c")
 include_directories(${INCLUDE_DIRS})
 message(STATUS SRC_FILES: ${SRC_FILES})
 add_executable(GAME ${SRC_FILES} ${SRCPP_FILES})
-target_link_libraries(GAME glfw OpenGL::GL GLEW::GLEW)
+target_link_libraries(GAME glfw OpenGL::GL GLEW::GLEW glm::glm)
 
 #glob everything in res
 add_custom_target(copy_resources ALL

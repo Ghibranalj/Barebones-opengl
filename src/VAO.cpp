@@ -12,8 +12,25 @@ VAO::~VAO() {
 }
 
 void VAO::bind() {
+    if (this->indexBufferIndex < 0) {
+        ERROR("VAO::bind() - no index buffer bound");
+        return;
+    }
+
     glBindVertexArray(this->id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexBufferId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,
+                 this->bufferIndexIDs[0]);
+}
+
+void VAO::draw() {
+    if (this->indexBufferIndex < 0) {
+        ERROR("VAO::draw() - no index buffer bound");
+        return;
+    }
+
+    this->bind();
+    glDrawElements(GL_TRIANGLES, this->bufferIndexSizes[0],
+                   GL_UNSIGNED_INT, 0);
 }
 
 void VAO::unbind() {
@@ -22,7 +39,8 @@ void VAO::unbind() {
 
 void VAO::addAttribute(VBO &attr, unsigned int index, unsigned int v_size,
                        unsigned int stride, unsigned int offset) {
-    this->bind();
+
+    glBindVertexArray(this->id);
     attr.bind();
     glEnableVertexAttribArray(index);
     glBindBuffer(GL_ARRAY_BUFFER, 1);
@@ -30,7 +48,7 @@ void VAO::addAttribute(VBO &attr, unsigned int index, unsigned int v_size,
                           stride * sizeof(float),
                           (void *)(offset * sizeof(float)));
     attr.unbind();
-    this->unbind();
+    glBindVertexArray(0);
 }
 
 // return index
@@ -43,9 +61,13 @@ unsigned int VAO::addIndexBuffer(std::vector<unsigned int> &indices) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     this->bufferIndexIDs.push_back(id);
+    this->bufferIndexSizes.push_back(indices.size());
+
+    assert(this->bufferIndexIDs.size() == this->bufferIndexSizes.size());
+
     return this->bufferIndexIDs.size() - 1;
 }
 
 void VAO::attachIndexBuffer(unsigned int index) {
-    indexBufferId = this->bufferIndexIDs[index];
+    this->indexBufferIndex = index;
 }

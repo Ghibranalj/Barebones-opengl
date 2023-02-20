@@ -1,11 +1,11 @@
 #ifndef VAO_H_
 #define VAO_H_
 
+#include "VBO.hpp"
 #include "interface.hpp"
 #include <GL/glew.h>
 #include <stddef.h>
 #include <vector>
-#include "VBO.hpp"
 
 class VAO {
   public:
@@ -14,6 +14,7 @@ class VAO {
     ~VAO();
     void bind();
     void unbind();
+    void draw();
     void addAttribute(VBO &attr, unsigned int index, unsigned int v_size,
                       unsigned int stride, unsigned int offset);
     unsigned int addIndexBuffer(std::vector<unsigned int> &ib);
@@ -21,8 +22,9 @@ class VAO {
 
   private:
     unsigned int id;
-    unsigned int indexBufferId = 0;
+    int indexBufferIndex = -1;
     std::vector<unsigned int> bufferIndexIDs;
+    std::vector<unsigned int> bufferIndexSizes;
 };
 
 #endif // VAO_H_

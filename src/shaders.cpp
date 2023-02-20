@@ -1,3 +1,4 @@
+#include <glm/gtc/type_ptr.hpp>
 #define SHADERS_CPP
 #include "shaders.hpp"
 
@@ -18,7 +19,6 @@ ShaderProgram::ShaderProgram(std::string name){
     if (!file.is_open()){
         FATAL("Could not open shader file: " + path);
     }
-
 
     std::string line;
     std::string * sources = new std::string[N_SHADER_TYPES];
@@ -92,17 +92,63 @@ int ShaderProgram::getUniformLocation(std::string name){
     return glGetUniformLocation(this->programID, name.c_str());
 }
 
-void ShaderProgram::setUniformFloat(int location, float value){
+void ShaderProgram::setUniformF(int location, float value){
     if (location == -1){
         return;
     }
     glUniform1f(location, value);
 }
 
+void ShaderProgram::setUniform2F(int location, glm::vec2 &value){
+    if (location == -1){
+        return;
+    }
+    glUniform2f(location, value.x, value.y);
+}
+void ShaderProgram::setUniform3F(int location, glm::vec3 &value){
+    if (location == -1){
+        return;
+    }
+    glUniform3f(location, value.x, value.y, value.z);
+}
+void ShaderProgram::setUniform4F(int location, glm::vec4 &value){
+    if (location == -1){
+        return;
+    }
+    glUniform4f(location, value.x, value.y, value.z, value.w);
+}
+void ShaderProgram::setUniformM4F(int location, glm::mat4 &value){
+    if (location == -1){
+        return;
+    }
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
 
-void ShaderProgram::setUniformUint(int location, unsigned int value){
+
+void ShaderProgram::setUniformUI(int location, unsigned int value){
     if (location == -1){
         return;
     }
     glUniform1ui(location, value);
+}
+
+void ShaderProgram::setUniform2UI(int location, glm::uvec2 &value){
+    if (location == -1){
+        return;
+    }
+    glUniform2ui(location, value.x, value.y);
+}
+
+void ShaderProgram::setUniform3UI(int location, glm::uvec3 &value){
+    if (location == -1){
+        return;
+    }
+    glUniform3ui(location, value.x, value.y, value.z);
+}
+
+void ShaderProgram::setUniform4UI(int location, glm::uvec4 &value){
+    if (location == -1){
+        return;
+    }
+    glUniform4ui(location, value.x, value.y, value.z, value.w);
 }
