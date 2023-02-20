@@ -41,6 +41,9 @@ int main() {
     std::vector<unsigned int> indices = {0, 1, 2, 0, 2, 3};
     auto idx = vao.addIndexBuffer(indices);
     vao.attachIndexBuffer(idx);
+
+    auto texture = Texture2D("res/face.png");
+
     auto shader = ShaderProgram("basic.glsl");
 
     // Render loop

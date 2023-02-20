@@ -6,7 +6,7 @@
 #include <stb_image.h>
 #undef STB_IMAGE_IMPLEMENTATION
 
-Texture::Texture(const std::string &filename) {
+Texture2D::Texture2D(const std::string &filename) {
     int width, height, channels;
     unsigned char *data =
         stbi_load(filename.c_str(), &width, &height, &channels, 0);
@@ -30,14 +30,14 @@ Texture::Texture(const std::string &filename) {
     this->textureID = tid;
 }
 
-Texture::~Texture() {
+Texture2D::~Texture2D() {
     glDeleteTextures(1, &this->textureID);
 }
 
-void Texture::bind() {
+void Texture2D::bind() {
     glBindTexture(GL_TEXTURE_2D, this->textureID);
 }
 
-void Texture::unbind() {
+void Texture2D::unbind() {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
