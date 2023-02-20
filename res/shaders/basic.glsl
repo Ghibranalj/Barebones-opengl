@@ -34,8 +34,6 @@ out vec4 color;
 uniform sampler2D u_texture;
 
 void main(){
-    // color = rotate(thecolor, u_time);
-    // color = thecolor;
 
     color = thecolor * texture(u_texture, thetexCoord);
 

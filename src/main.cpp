@@ -1,4 +1,3 @@
-
 #include "VAO.hpp"
 #include "VBO.hpp"
 #include "gl.h"
@@ -37,7 +36,7 @@ int main() {
     glDebugMessageCallback(GLDebugMessageCallback, NULL);
 
     std::vector<float> rect = {
-        //  (x,y,z)   (r,g,b)   (Tx,Ty)
+        //  (x,y,z)   (r,g,b,a)   (Tx,Ty)
         -0.5f, -0.5f, 0.0f, /**/ 1.0f, 0.0f, 0.0f, 1.0f, /**/ 0.0f, 0.0f, //
         0.5f,  -0.5f, 0.0f, /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 1.0f, 0.0f, //
         0.5f,  0.5f,  0.0f, /**/ 0.0f, 0.0f, 1.0f, 1.0f, /**/ 1.0f, 1.0f, //
@@ -77,5 +76,6 @@ int main() {
 
     glfwDestroyWindow(window);
     glfwTerminate();
+
     return 0;
 }

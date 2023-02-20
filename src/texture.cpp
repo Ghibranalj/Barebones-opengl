@@ -30,11 +30,13 @@ Texture::Texture(const std::string &filename) {
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    stbi_image_free(data);
+
     this->textureID = tid;
 }
 
 Texture::~Texture() {
-    stbi_image_free(this->data);
+    glDeleteTextures(1, &this->textureID);
 }
 
 void Texture::bind() {
