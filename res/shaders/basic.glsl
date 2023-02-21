@@ -8,6 +8,9 @@ out vec4 thecolor;
 out vec2 thetexCoord;
 
 uniform float u_time;
+uniform mat4 u_projection;
+uniform mat4 u_view;
+uniform mat4 u_model;
 
 
 mat2 rotate2d(float angle)
@@ -15,10 +18,9 @@ mat2 rotate2d(float angle)
     return mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
 }
 
-
 void main() {
-    vec2 p = rotate2d(u_time) * vec2(position.x, position.y);
-    gl_Position = vec4(p, position.z, 1.0);
+    // vec2 p = rotate2d(u_time) * vec2(position.x, position.y);
+    gl_Position = u_projection * u_view * u_model * vec4(position.x,position.y, 0.0, 1.0);
     thecolor = color;
     thetexCoord = texCoord;
 }
@@ -35,6 +37,8 @@ uniform sampler2D u_texture;
 
 void main(){
 
-    color = thecolor * texture(u_texture, thetexCoord);
+    // color = thecolor * texture(u_texture, thetexCoord);
+    color = texture(u_texture, thetexCoord);
+    // color= thecolor;
 
 }

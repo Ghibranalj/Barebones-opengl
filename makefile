@@ -7,16 +7,22 @@ RM    := \rm -rf
 MKDIR := mkdir -p
 MAKE  := make --no-print-directory
 src_files := $(shell find src -name '*.cpp' -or -name '*c' -or -name '*.h' -or -name '*.hpp')
+CMAKE_FLAGS :=
 
+.PHONY: all
 all: ./build/Makefile
 	@$(MAKE) -C ./build
 
-run: all
+release: CMAKE_FLAGS += -DCMAKE_BUILD_TYPE=Release
+release: clean all distclean
+	@echo "Release build complete."
+
+run: ./build/Makefile
 	 @$(MAKE) -C ./build run || true
 
 ./build/Makefile: $(src_files)
 	@($(MKDIR) build > /dev/null)
-	@(cd build > /dev/null 2>&1 && cmake ..)
+	@(cd build > /dev/null 2>&1 && cmake $(CMAKE_FLAGS) .. )
 
 .PHONY: distclean clean
 clean:
@@ -32,9 +38,4 @@ distclean:
 	@$(RM) ./build/*.cmake
 	@$(RM) ./build/*.txt
 	@$(RM) ./build/compile_commands.json
-
-
-ifeq ($(findstring distclean,$(MAKECMDGOALS)),)
-	@$(MAKECMDGOALS): ./build/Makefile
-	@$(MAKE) -C build $(MAKECMDGOALS)
-endif
+	@$(RM) ./build/vendor

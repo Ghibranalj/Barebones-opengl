@@ -6,7 +6,7 @@
 
 namespace Window {
 
-typedef void (*inputCallback)(int, int, int, int);
+typedef void (*inputCallback)(int key, int scancode, int action, int mods);
 
 void init(unsigned int width, unsigned int height, std::string title,
           bool resizable);
@@ -17,6 +17,9 @@ void swapBuffers();
 void setInputCallback(inputCallback callback);
 void close();
 void toggleVsync();
+void setVsync(bool enabled);
+bool isVsyncEnabled();
+void getSize(int &width, int &height);
 
 } // namespace Window
 

@@ -4,20 +4,19 @@
 #include "log.hpp"
 #include <GLFW/glfw3.h>
 
-namespace Window {
-
-struct window_t {
+struct window {
     GLFWwindow *window;
-    inputCallback callback;
+    Window::inputCallback callback;
+    bool vSyncEnabled;
 };
 
-window_t window_i;
+static window window{nullptr, nullptr, false};
 
-void keyCallback(GLFWwindow *window, int key, int scancode, int action,
+static void keyCallback(GLFWwindow *window, int key, int scancode, int action,
                  int mods);
 
-void init(unsigned int width, unsigned int height, std::string title,
-          bool resizable) {
+void Window::init(unsigned int width, unsigned int height, std::string title,
+                  bool resizable) {
 
     if (!glfwInit()) {
         FATAL("Failed to initialize GLFW");
@@ -29,13 +28,13 @@ void init(unsigned int width, unsigned int height, std::string title,
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     }
 
-    window_i.window =
-        glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
-    if (!window_i.window) {
+
+    window.window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+    if (!window.window) {
         FATAL("Failed to create GLFW window");
     }
 
-    glfwMakeContextCurrent(window_i.window);
+    glfwMakeContextCurrent(window.window);
 
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
@@ -45,42 +44,52 @@ void init(unsigned int width, unsigned int height, std::string title,
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(GLDebugMessageCallback, NULL);
 
-    glfwSetKeyCallback(window_i.window, keyCallback);
-    window_i.callback = NULL;
+    glfwSetKeyCallback(window.window, keyCallback);
+    window.callback = NULL;
 }
 
-int shouldClose() {
-    return glfwWindowShouldClose(window_i.window);
+int Window::shouldClose() {
+    return glfwWindowShouldClose(window.window);
 }
 
-void update() {
-    glfwSwapBuffers(window_i.window);
+void Window::update() {
+    glfwSwapBuffers(window.window);
     glfwPollEvents();
 }
 
-void destroy() {
-    glfwDestroyWindow(window_i.window);
+void Window::destroy() {
+    glfwDestroyWindow(window.window);
     glfwTerminate();
 }
 
-void keyCallback(GLFWwindow *window, int key, int scancode, int action,
+void Window::setInputCallback(inputCallback callback) {
+    window.callback = callback;
+}
+
+void Window::close() {
+    glfwSetWindowShouldClose(window.window, GL_TRUE);
+}
+
+void Window::toggleVsync() {
+    setVsync(!window.vSyncEnabled);
+}
+
+void Window::setVsync(bool enabled) {
+    window.vSyncEnabled = enabled;
+}
+
+bool Window::isVsyncEnabled() {
+    return window.vSyncEnabled;
+}
+
+void Window::getSize(int &width, int &height){
+    glfwGetWindowSize(window.window, &width, &height);
+}
+
+static void keyCallback(GLFWwindow *glfw_window, int key, int scancode, int action,
                  int mods) {
-    if (window_i.callback == NULL)
+    if (window.callback == nullptr || glfw_window != window.window)
         return;
 
-    window_i.callback(key, scancode, action, mods);
+    window.callback(key, scancode, action, mods);
 }
-
-void setInputCallback(inputCallback callback) {
-    window_i.callback = callback;
-}
-
-void close() {
-    glfwSetWindowShouldClose(window_i.window, GL_TRUE);
-}
-
-void toggleVsync(bool enable) {
-    glfwSwapInterval((enable) ? 1 : 0);
-}
-
-} // namespace Window
