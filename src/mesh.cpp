@@ -1,6 +1,7 @@
 #include "GL/glew.h"
 #include "log.hpp"
 #include "mesh.hpp"
+#include <memory>
 #include <vector>
 #include <string>
 #include <fstream>
@@ -77,7 +78,6 @@ static bool LoadOBJ(std::string objFile, std::vector<Vertex> *vert,
             continue;
         }
     }
-
     return true;
 }
 
@@ -139,11 +139,13 @@ void Mesh::init(std::vector<Vertex>& vertices, std::vector<unsigned int>& indice
     VBO = vbo;
     EBO = ebo;
     // copy vertex in the heap
-    this->vertices = new std::vector<Vertex>(vertices);
-    this->indices = new std::vector<unsigned int>(indices);
+    this->vertices =  std::make_unique<std::vector<Vertex>>(vertices);
+    this->indices = std::make_unique<std::vector<unsigned int>>(indices);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
-
-
 
 void Mesh::draw() {
     glBindVertexArray(VAO);
@@ -154,6 +156,4 @@ Mesh::~Mesh() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    delete[] vertices;
-    delete[] indices;
 }

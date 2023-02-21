@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <string>
+#include <memory>
 
 struct Vertex {
     // layout (location = 0) in vec3 position;
@@ -16,19 +17,19 @@ struct Vertex {
     glm::vec3 color;
 };
 
-
 class Mesh {
   public:
     Mesh(std::string objFile);
-    Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+    Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
     ~Mesh();
     void draw();
 
   private:
-    void init(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+    void init(std::vector<Vertex> &vertices,
+              std::vector<unsigned int> &indices);
     unsigned int VAO, VBO, EBO;
-    std::vector<unsigned int>* indices;
-    std::vector<Vertex>* vertices;
+    std::unique_ptr<std::vector<Vertex>> vertices;
+    std::unique_ptr<std::vector<unsigned int>> indices;
 };
 
 #endif // MESH_H_
