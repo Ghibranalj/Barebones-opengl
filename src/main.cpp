@@ -84,7 +84,8 @@ int main() {
     vao.addAttribute(vbo, 2, 2, 9, 7);
 
     std::vector<unsigned int> indices = {0, 1, 2, 0, 2, 3};
-    auto idx = vao.addIndexBuffer(indices);
+
+    auto idx = vao.addIndexBuffer(indices_cube);
     vao.attachIndexBuffer(idx);
 
     auto texture = Texture2D("res/face.png");
