@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.7)
 
 project(OPENGL VERSION 1.0.0)
 
+if (POLICY CMP0072)
+  cmake_policy (SET CMP0072 NEW)
+endif(POLICY CMP0072)
+
 set(CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -46,5 +50,12 @@ add_custom_target(run
     COMMAND GAME || true
     DEPENDS GAME
     COMMENT "=== Running GAME ==="
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+)
+
+add_custom_target(valgrind
+    COMMAND valgrind --leak-check=full --track-origins=yes --log-file=valgrind.out.txt ./GAME
+    DEPENDS GAME
+    COMMENT "=== Running GAME under valgrind ==="
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 )

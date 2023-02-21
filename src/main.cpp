@@ -49,7 +49,6 @@ int main() {
 
     float frame = 0.0f;
     glEnable(GL_CULL_FACE);
-    Window::update();
     while (!Window::shouldClose()) {
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -71,7 +70,6 @@ int main() {
 
         shader.setUniformM4F("u_projection", projection);
         shader.setUniformF("u_time", frame);
-
 
         mesh.draw();
         Window::update();

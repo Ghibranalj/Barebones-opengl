@@ -25,28 +25,23 @@ static bool LoadOBJ(std::string objFile, std::vector<Vertex> *vert,
         std::string delim = " ";
         std::string token = line.substr(0, line.find(delim));
 
-        char *cline = new char[line.length() + 1];
-        strcpy(cline, line.c_str());
 
         if (token == "v") {
             glm::vec3 position;
-            sscanf(cline, "v %f %f %f", &position.x, &position.y, &position.z);
+            sscanf(line.c_str(), "v %f %f %f", &position.x, &position.y, &position.z);
             temp_position.push_back(position);
-            continue;
         }
 
         if (token == "vt") {
             glm::vec2 uv;
-            sscanf(cline, "vt %f %f", &uv.x, &uv.y);
+            sscanf(line.c_str(), "vt %f %f", &uv.x, &uv.y);
             temp_uv.push_back(uv);
-            continue;
         }
 
         if (token == "vn") {
             glm::vec3 normal;
-            sscanf(cline, "vn %f %f %f", &normal.x, &normal.y, &normal.z);
+            sscanf(line.c_str(), "vn %f %f %f", &normal.x, &normal.y, &normal.z);
             temp_normal.push_back(normal);
-            continue;
         }
 
         // always at the end
@@ -55,7 +50,7 @@ static bool LoadOBJ(std::string objFile, std::vector<Vertex> *vert,
             vert->resize(size);
             unsigned int positionIndex[3], uvIndex[3], normalIndex[3];
             int matches =
-                sscanf(cline, "f %d/%d/%d %d/%d/%d %d/%d/%d", &positionIndex[0],
+                sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &positionIndex[0],
                        &uvIndex[0], &normalIndex[0], &positionIndex[1],
                        &uvIndex[1], &normalIndex[1], &positionIndex[2],
                        &uvIndex[2], &normalIndex[2]);
@@ -74,8 +69,6 @@ static bool LoadOBJ(std::string objFile, std::vector<Vertex> *vert,
                 vert->at(index) = vertex;
                 indices->push_back(index);
             }
-
-            continue;
         }
     }
     return true;
@@ -127,6 +120,7 @@ void Mesh::init(std::vector<Vertex>& vertices, std::vector<unsigned int>& indice
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride,
                           (void *)offsetof(Vertex, uv));
 
+    // color
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride,
                           (void *)offsetof(Vertex, color));

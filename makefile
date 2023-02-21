@@ -24,6 +24,10 @@ run: ./build/Makefile
 	@($(MKDIR) build > /dev/null)
 	@(cd build > /dev/null 2>&1 && cmake $(CMAKE_FLAGS) .. )
 
+.PHONY: valgrind
+valgrind: ./build/Makefile
+	@$(MAKE) -C ./build valgrind || true
+
 .PHONY: distclean clean
 clean:
 	@$(RM) -rf ./build
