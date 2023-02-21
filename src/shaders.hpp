@@ -1,6 +1,5 @@
 #ifndef SHADERS_H_
 #define SHADERS_H_
-#include "interface.hpp"
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <iostream>
