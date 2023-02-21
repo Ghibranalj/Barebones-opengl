@@ -7,6 +7,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/matrix.hpp>
 
 int direction = 1;
 
@@ -72,29 +73,36 @@ int main() {
     auto idx = vao.addIndexBuffer(indices);
     vao.attachIndexBuffer(idx);
 
-    auto texture = Texture2D("res/face.png");
+    auto texture = Texture2D("res/container.jpg");
 
     auto shader = ShaderProgram("basic.glsl");
 
     int width, height;
     Window::getSize(width, height);
-    auto projection = glm::ortho(0.0f, static_cast<float>(width), 0.0f,
-                                 static_cast<float>(height), -1.0f, 1.0f);
+
+    glm::mat4 projection;
+
+    // projection =
+    //     glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1000.0f,
+    //     1000.0f);
+    projection =
+        glm::perspective(glm::radians(45.0f), (float) width / (float) height, 0.01f, 2000.0f);
+
+    // projection = glm::transpose(projection);
 
     // Render loop
     float frame = 0.0f;
     Window::update();
     while (!Window::shouldClose()) {
         glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         shader.use();
-
-        auto model = glm::mat4(1.0f);
-
+        glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(camx, camy, 0.0f));
-        model = glm::rotate(model, glm::radians(rotation),
-                                 glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::rotate(model, glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
 
-        auto view = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::translate(view, glm::vec3(250.0f, 100.0f, -1000.0f));
 
         shader.setUniformM4F("u_model", model);
         shader.setUniformM4F("u_view", view);

@@ -21,6 +21,7 @@ mat2 rotate2d(float angle)
 void main() {
     // vec2 p = rotate2d(u_time) * vec2(position.x, position.y);
     gl_Position = u_projection * u_view * u_model * vec4(position.x,position.y, 0.0, 1.0);
+    // gl_Position = vec4(position, 1.0);
     thecolor = color;
     thetexCoord = texCoord;
 }
