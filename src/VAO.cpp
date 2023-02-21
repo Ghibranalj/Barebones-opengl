@@ -17,9 +17,10 @@ void VAO::bind() {
         return;
     }
 
+    auto idx = this->indexBufferIndex;
+    auto ib = this->bufferIndexIDs[idx];
     glBindVertexArray(this->id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,
-                 this->bufferIndexIDs[0]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
 }
 
 void VAO::draw() {
@@ -29,8 +30,9 @@ void VAO::draw() {
     }
 
     this->bind();
-    glDrawElements(GL_TRIANGLES, this->bufferIndexSizes[0],
-                   GL_UNSIGNED_INT, 0);
+    auto idx = this->indexBufferIndex;
+    auto count = this->bufferIndexSizes[idx];
+    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
 }
 
 void VAO::unbind() {

@@ -18,25 +18,26 @@ float rotation = 0.0f;
 void inputCallback(int key, int scancode, int action, int mods) {
 
     bool act = action == Action(PRESS) || action == Action(REPEAT);
+    float speed = 0.1f;
     // wasd
     if (key == Key(W) && act) {
-        camy += 10.0f;
+        camy += speed;
     }
     if (key == Key(S) && act) {
-        camy -= 10.0f;
+        camy -= speed;
     }
     if (key == Key(A) && act) {
-        camx -= 10.0f;
+        camx -= speed;
     }
     if (key == Key(D) && act) {
-        camx += 10.0f;
+        camx += speed;
     }
-    if (key == Key(E) && act) {
-        rotation += 1.0f;
-    }
-    if (key == Key(Q) && act) {
-        rotation -= 1.0f;
-    }
+    // if (key == Key(E) && act) {
+    //     rotation += 1.0f;
+    // }
+    // if (key == Key(Q) && act) {
+    //     rotation -= 1.0f;
+    // }
     if (key == Key(ESCAPE) && act) {
         Window::close();
     }
@@ -46,23 +47,36 @@ int main() {
     Window::init(800, 600, "Hello World", false);
     Window::setInputCallback(inputCallback);
 
-    std::vector<float> rect = {
-        //  (x,y,z)   (r,g,b,a)   (Tx,Ty)
-        -0.5f, -0.5f, 0.0f, /**/ 1.0f, 0.0f, 0.0f, 1.0f, /**/ 0.0f, 0.0f, //
-        0.5f,  -0.5f, 0.0f, /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 1.0f, 0.0f, //
-        0.5f,  0.5f,  0.0f, /**/ 0.0f, 0.0f, 1.0f, 1.0f, /**/ 1.0f, 1.0f, //
-        -0.5f, 0.5f,  0.0f, /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 0.0f, 1.0f  //
-    };
-
     std::vector<float> rect2 = {
         //  (x,y,z)   (r,g,b,a)   (Tx,Ty)
-        0.0f,   0.0f,   0.0f, /**/ 1.0f, 0.0f, 0.0f, 1.0f, /**/ 1.0f, 1.0f, //
-        200.0f, 0.0f,   0.0f, /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 0.0f, 1.0f, //
-        200.0f, 200.0f, 0.0f, /**/ 0.0f, 0.0f, 1.0f, 1.0f, /**/ 0.0f, 0.0f, //
-        0.0f,   200.0f, 0.0f, /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 1.0f, 0.0f  //
+        0.0f, 0.0f, 0.0f, /**/ 1.0f, 0.0f, 0.0f, 1.0f, /**/ 1.0f, 1.0f, //
+        1.0f, 0.0f, 0.0f, /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 0.0f, 1.0f, //
+        1.0f, 1.0f, 0.0f, /**/ 0.0f, 0.0f, 1.0f, 1.0f, /**/ 0.0f, 0.0f, //
+        0.0f, 1.0f, 0.0f, /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 1.0f, 0.0f  //
     };
 
-    auto vbo = VBO(rect2);
+    std::vector<float> cube = {
+        // (x,y,z)  (r,g,b,a)   (Tx,Ty)
+        -1.0f, -1.0f, -1.0f, /**/ 1.0f, 0.0f, 0.0f, 1.0f, /**/ 0.0f, 0.0f, //
+        1.0f,  -1.0f, -1.0f, /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 1.0f, 0.0f, //
+        1.0f,  1.0f,  -1.0f, /**/ 0.0f, 0.0f, 1.0f, 1.0f, /**/ 1.0f, 1.0f, //
+        -1.0f, 1.0f,  -1.0f, /**/ 1.0f, 1.0f, 1.0f, 1.0f, /**/ 0.0f, 1.0f, //
+        -1.0f, -1.0f, 1.0f,  /**/ 1.0f, 0.0f, 0.0f, 1.0f, /**/ 0.0f, 0.0f, //
+        1.0f,  -1.0f, 1.0f,  /**/ 0.0f, 1.0f, 0.0f, 1.0f, /**/ 1.0f, 0.0f, //
+        1.0f,  1.0f,  1.0f,  /**/ 0.0f, 0.0f, 1.0f, 1.0f, /**/ 1.0f, 1.0f, //
+        -1.0f, 1.0f,  1.0f,  /**/ 1.0f, 1.0f, 1.0f, 1.0f, /**/ 0.0f, 1.0f, //
+    };
+
+    std::vector<unsigned int> indices_cube = {
+        0, 1, 3, 3, 1, 2, //
+        1, 5, 2, 2, 5, 6, //
+        5, 4, 6, 6, 4, 7, //
+        4, 0, 7, 7, 0, 3, //
+        3, 2, 7, 7, 2, 6, //
+        4, 5, 0, 0, 5, 1  //
+    };
+
+    auto vbo = VBO(cube);
 
     auto vao = VAO();
     vao.addAttribute(vbo, 0, 3, 9, 0);
@@ -73,7 +87,7 @@ int main() {
     auto idx = vao.addIndexBuffer(indices);
     vao.attachIndexBuffer(idx);
 
-    auto texture = Texture2D("res/container.jpg");
+    auto texture = Texture2D("res/face.png");
 
     auto shader = ShaderProgram("basic.glsl");
 
@@ -82,27 +96,28 @@ int main() {
 
     glm::mat4 projection;
 
-    // projection =
-    //     glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1000.0f,
-    //     1000.0f);
-    projection =
-        glm::perspective(glm::radians(45.0f), (float) width / (float) height, 0.01f, 2000.0f);
+    projection = glm::perspective(glm::radians(45.0f),
+                                  (float)width / (float)height, 0.01f, 2000.0f);
 
-    // projection = glm::transpose(projection);
-
-    // Render loop
     float frame = 0.0f;
+    glEnable(GL_CULL_FACE);
     Window::update();
     while (!Window::shouldClose()) {
         glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+        Window::getSize(width, height);
+
+        projection = glm::perspective(
+            glm::radians(45.0f), (float)width / (float)height, 0.01f, 2000.0f);
+
         shader.use();
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(camx, camy, 0.0f));
-        model = glm::rotate(model, glm::radians(rotation), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(frame),
+                            glm::vec3(0.0f, 1.0f, 1.0f));
 
         glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(250.0f, 100.0f, -1000.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
 
         shader.setUniformM4F("u_model", model);
         shader.setUniformM4F("u_view", view);
@@ -112,7 +127,7 @@ int main() {
         texture.bind();
         vao.draw();
         Window::update();
-        frame += direction * 0.1f;
+        frame += direction * 1.0f;
     }
 
     Window::destroy();
