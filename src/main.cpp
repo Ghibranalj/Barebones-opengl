@@ -1,4 +1,5 @@
 #include "log.hpp"
+#include "model.hpp"
 #include "shaders.hpp"
 #include "texture.hpp"
 #include "window.hpp"
@@ -7,7 +8,6 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/matrix.hpp>
 #include "mesh.hpp"
-#include "model.hpp"
 
 int direction = 1;
 
@@ -42,14 +42,17 @@ int main() {
     Window::init(1000, 800, "Hello World", false);
     Window::setInputCallback(inputCallback);
     {
-        auto object = Model("res/monkey.obj");
-        auto shader = ShaderProgram("light.glsl");
+        // auto object = Mesh("res/model/monkey.obj");
+        auto shader = ShaderProgram("mtl.glsl");
+
+        auto mdl = Model("monkey");
 
         int width, height;
         glm::mat4 projection;
 
-        glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
+        // warm yellow
         glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+        glm::vec3 lightPos(0.0f, 0.0f, -5.0f);
 
         glm::vec3 cameraPos(0.0f, 0.0f, -5.0f);
 
@@ -83,7 +86,8 @@ int main() {
             shader.setUniform("u_lightColor", lightColor);
             shader.setUniform("u_viewPos", cameraPos);
 
-            object.draw();
+            // object.draw();
+            mdl.draw(shader);
             Window::update();
             frame += direction * 1.0f;
         }

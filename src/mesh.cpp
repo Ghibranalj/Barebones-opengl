@@ -107,7 +107,7 @@ void Mesh::init(std::vector<Vertex> &vertices,
     glGenBuffers(1, &ebo);
 
     if (vao == 0 || vbo == 0 || ebo == 0) {
-        FATAL("Failed to create buffers");
+         FATAL("Failed to create buffers");
     }
     // binding attributes
     size_t stride = sizeof(Vertex);

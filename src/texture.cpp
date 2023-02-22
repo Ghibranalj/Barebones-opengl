@@ -6,7 +6,7 @@
 #include <stb_image.h>
 #undef STB_IMAGE_IMPLEMENTATION
 
-Texture2D::Texture2D(const std::string &filename) {
+Texture::Texture(const std::string &filename) {
     int width, height, channels;
     unsigned char *data =
         stbi_load(filename.c_str(), &width, &height, &channels, 0);
@@ -26,7 +26,15 @@ Texture2D::Texture2D(const std::string &filename) {
                     GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+    GLenum format = GL_RGB;
+    if (channels == 1) {
+        format = GL_RED;
+    } else if (channels == 3) {
+        format = GL_RGB;
+    } else if (channels == 4) {
+        format = GL_RGBA;
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
                  GL_UNSIGNED_BYTE, data);
 
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -35,14 +43,14 @@ Texture2D::Texture2D(const std::string &filename) {
     this->textureID = tid;
 }
 
-Texture2D::~Texture2D() {
+Texture::~Texture() {
     glDeleteTextures(1, &this->textureID);
 }
 
-void Texture2D::bind() {
+void Texture::bind() {
     glBindTexture(GL_TEXTURE_2D, this->textureID);
 }
 
-void Texture2D::unbind() {
+void Texture::unbind() {
     glBindTexture(GL_TEXTURE_2D, 0);
 }

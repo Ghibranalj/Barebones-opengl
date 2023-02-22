@@ -3,10 +3,10 @@
 
 #include <string>
 
-class Texture2D {
+class Texture {
 public:
-    Texture2D(const std::string& filename);
-    ~Texture2D();
+    Texture(const std::string& filename);
+    ~Texture();
     void bind();
     void unbind();
 private:
