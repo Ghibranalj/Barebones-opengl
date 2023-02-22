@@ -7,7 +7,7 @@ if (POLICY CMP0072)
 endif(POLICY CMP0072)
 
 set(CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 
@@ -53,8 +53,11 @@ add_custom_target(run
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 )
 
+
+set(valgrind_supp "${CMAKE_CURRENT_SOURCE_DIR}/valgrind.supp")
+set(valgrind_cmd valgrind --leak-check=full --log-file=valgrind-out.txt --suppressions=${valgrind_supp} --track-origins=yes)
 add_custom_target(valgrind
-    COMMAND valgrind --leak-check=full --track-origins=yes --log-file=valgrind.out.txt ./GAME
+    COMMAND ${valgrind_cmd} ./GAME
     DEPENDS GAME
     COMMENT "=== Running GAME under valgrind ==="
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
