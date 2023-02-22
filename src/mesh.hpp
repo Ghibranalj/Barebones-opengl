@@ -21,6 +21,10 @@ class Mesh {
   public:
     Mesh(std::string objFile);
     Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
+    // copy constructor
+    Mesh(const Mesh &mesh) {
+        init(*mesh.vertices, *mesh.indices);
+    }
     ~Mesh();
     void draw();
 

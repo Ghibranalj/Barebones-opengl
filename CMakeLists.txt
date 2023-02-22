@@ -24,6 +24,7 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(GLEW REQUIRED)
+find_package(assimp REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 link_libraries(${GLEW_LIBRARIES})
 
@@ -36,7 +37,7 @@ file(GLOB_RECURSE SRC_FILES "src/*.c")
 include_directories(${INCLUDE_DIRS})
 add_executable(GAME ${SRC_FILES} ${SRCPP_FILES})
 
-target_link_libraries(GAME glfw OpenGL::GL GLEW::GLEW glm::glm)
+target_link_libraries(GAME glfw OpenGL::GL GLEW::GLEW glm::glm assimp)
 
 #glob everything in res
 add_custom_target(copy_resources ALL

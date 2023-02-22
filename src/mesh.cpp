@@ -1,6 +1,7 @@
 #include "GL/glew.h"
 #include "log.hpp"
 #include "mesh.hpp"
+#include <cstdio>
 #include <memory>
 #include <vector>
 #include <string>
@@ -25,10 +26,10 @@ static bool LoadOBJ(std::string objFile, std::vector<Vertex> *vert,
         std::string delim = " ";
         std::string token = line.substr(0, line.find(delim));
 
-
         if (token == "v") {
             glm::vec3 position;
-            sscanf(line.c_str(), "v %f %f %f", &position.x, &position.y, &position.z);
+            sscanf(line.c_str(), "v %f %f %f", &position.x, &position.y,
+                   &position.z);
             temp_position.push_back(position);
         }
 
@@ -40,34 +41,43 @@ static bool LoadOBJ(std::string objFile, std::vector<Vertex> *vert,
 
         if (token == "vn") {
             glm::vec3 normal;
-            sscanf(line.c_str(), "vn %f %f %f", &normal.x, &normal.y, &normal.z);
+            sscanf(line.c_str(), "vn %f %f %f", &normal.x, &normal.y,
+                   &normal.z);
             temp_normal.push_back(normal);
         }
 
         // always at the end
         if (token == "f") {
             size_t size = temp_position.size();
-            vert->resize(size);
             unsigned int positionIndex[3], uvIndex[3], normalIndex[3];
             int matches =
-                sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &positionIndex[0],
-                       &uvIndex[0], &normalIndex[0], &positionIndex[1],
-                       &uvIndex[1], &normalIndex[1], &positionIndex[2],
-                       &uvIndex[2], &normalIndex[2]);
+                sscanf(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d",
+                       &positionIndex[0], &uvIndex[0], &normalIndex[0],
+                       &positionIndex[1], &uvIndex[1], &normalIndex[1],
+                       &positionIndex[2], &uvIndex[2], &normalIndex[2]);
+            bool noUV = false;
             if (matches != 9) {
-                ERROR("File can't be read by our simple parser : ( Try "
-                      "exporting with other options");
-                return false;
+                matches = sscanf(line.c_str(), "f %d//%d %d//%d %d//%d",
+                                 &positionIndex[0], &normalIndex[0], //
+                                 &positionIndex[1], &normalIndex[1], //
+                                 &positionIndex[2], &normalIndex[2]);
+                noUV = true;
+                if (matches != 6) {
+                    ERROR("Failed to parse obj file");
+                    return false;
+                }
             }
-
             for (int i = 0; i < 3; i++) {
-                auto index = positionIndex[i] - 1;
+
                 Vertex vertex;
-                vertex.position = temp_position[index];
-                vertex.uv = temp_uv[uvIndex[i] - 1];
+                vertex.position = temp_position[positionIndex[i] - 1];
+
+                if (!noUV)
+                    vertex.uv = temp_uv[uvIndex[i] - 1];
+
                 vertex.normal = temp_normal[normalIndex[i] - 1];
-                vert->at(index) = vertex;
-                indices->push_back(index);
+                vert->push_back(vertex);
+                indices->push_back(vert->size() - 1);
             }
         }
     }
@@ -85,10 +95,11 @@ Mesh::Mesh(std::string objFile) {
 }
 
 Mesh::Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices) {
-    init (vertices, indices);
+    init(vertices, indices);
 }
 
-void Mesh::init(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices){
+void Mesh::init(std::vector<Vertex> &vertices,
+                std::vector<unsigned int> &indices) {
     unsigned int vao, vbo, ebo;
 
     glGenVertexArrays(1, &vao);
@@ -133,7 +144,7 @@ void Mesh::init(std::vector<Vertex>& vertices, std::vector<unsigned int>& indice
     VBO = vbo;
     EBO = ebo;
     // copy vertex in the heap
-    this->vertices =  std::make_unique<std::vector<Vertex>>(vertices);
+    this->vertices = std::make_unique<std::vector<Vertex>>(vertices);
     this->indices = std::make_unique<std::vector<unsigned int>>(indices);
 
     glBindVertexArray(0);
