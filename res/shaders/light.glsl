@@ -9,6 +9,7 @@ uniform mat4 u_projection;
 uniform mat4 u_view;
 uniform mat4 u_model;
 uniform vec3 u_lightPos;
+uniform vec3 u_viewPos;
 
 out vec3 v_surfacenormal;
 out vec3 v_lightdirection;
@@ -44,13 +45,12 @@ void main(){
     vec3 diffuse = dotproduct * u_lightColor;
     diffuse = diffuse + 0.2;
 
-    float specularStrength = 0.5;
+    float specularStrength = 1.0;
     vec3 viewDir = normalize(u_viewPos - v_fagpos);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     vec3 specular = specularStrength * spec * u_lightColor;
 
     vec3 light = diffuse + specular;
-
     color= vec4(diffuse, 1.0) * vec4(1.0, 1.0, 1.0, 1.0);
 }

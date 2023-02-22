@@ -7,6 +7,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/matrix.hpp>
 #include "mesh.hpp"
+#include "model.hpp"
 
 int direction = 1;
 
@@ -41,18 +42,14 @@ int main() {
     Window::init(1000, 800, "Hello World", false);
     Window::setInputCallback(inputCallback);
     {
-        auto object = Mesh("res/monkey.obj");
+        auto object = Model("res/monkey.obj");
         auto shader = ShaderProgram("light.glsl");
 
         int width, height;
         glm::mat4 projection;
 
-        glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+        glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
         glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-
-        // shader = Shader("light.glsl", {"position", "normal", "texcoord"});
-        // Uniform::setmat4();
-
 
         glm::vec3 cameraPos(0.0f, 0.0f, -5.0f);
 
@@ -74,19 +71,17 @@ int main() {
                                 glm::vec3(0.0f, 1.0f, 0.0f));
 
             glm::mat4 view = glm::mat4(1.0f);
-
             shader.use();
             cameraPos.x = camx;
             cameraPos.z = camy;
             view = glm::translate(view, cameraPos);
 
-            shader.setUniformM4F("u_model", model);
-            shader.setUniformM4F("u_view", view);
-
-            shader.setUniformM4F("u_projection", projection);
-            shader.setUniform3F("u_lightPos", lightPos);
-            shader.setUniform3F("u_lightColor", lightColor);
-            shader.setUniform3F("u_viewPos", cameraPos);
+            shader.setUniform("u_model", model);
+            shader.setUniform("u_view", view);
+            shader.setUniform("u_projection", projection);
+            shader.setUniform("u_lightPos", lightPos);
+            shader.setUniform("u_lightColor", lightColor);
+            shader.setUniform("u_viewPos", cameraPos);
 
             object.draw();
             Window::update();

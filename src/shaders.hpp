@@ -1,9 +1,12 @@
 #ifndef SHADERS_H_
 #define SHADERS_H_
+#include "log.hpp"
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <iostream>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #ifndef SHADER_PATH
 #define SHADER_PATH "res/shaders/"
@@ -22,68 +25,94 @@ static std::string TYPE_NAME[N_SHADER_TYPES] = {"VERTEX", "FRAGMENT",
 enum class ShaderType { NONE = -1, VERTEX = 0, FRAGMENT = 1, GEOMETRY = 2 };
 #endif // SHADERS_CPP
 
+struct ShaderUniform {
+    std::string name;
+    std::string type;
+};
+
 class ShaderProgram {
   public:
     ShaderProgram(std::string shaderName);
     ~ShaderProgram();
-
     void use();
     void unuse();
 
-    int getUniformLocation(std::string uniformName);
-    void setUniformF(int location, float value);
-    void setUniform2F(int location, glm::vec2 &value);
-    void setUniform3F(int location, glm::vec3 &value);
-    void setUniform4F(int location, glm::vec4 &value);
-    void setUniformM4F(int location, glm::mat4 &value);
-
-    void setUniformF(std::string uniformName, float value) {
-        setUniformF(getUniformLocation(uniformName), value);
+    int getUniformLocation(std::string &uniformName);
+    void setUniform(int location, float value);
+    void setUniform(int location, glm::vec2 &value);
+    void setUniform(int location, glm::vec3 &value);
+    void setUniform(int location, glm::vec4 &value);
+    void setUniform(int location, glm::mat4 &value);
+    void setUniform(std::string uniformName, float value) {
+        setUniform(getUniformLocation(uniformName), value);
     }
-    void setUniform2F(std::string uniformName, glm::vec2 &value) {
-        setUniform2F(getUniformLocation(uniformName), value);
+    void setUniform(std::string uniformName, glm::vec2 &value) {
+        setUniform(getUniformLocation(uniformName), value);
     }
-    void setUniform3F(std::string uniformName, glm::vec3 &value) {
-        setUniform3F(getUniformLocation(uniformName), value);
+    void setUniform(std::string uniformName, glm::vec3 &value) {
+        setUniform(getUniformLocation(uniformName), value);
     }
-    void setUniform4F(std::string uniformName, glm::vec4 &value) {
-        setUniform4F(getUniformLocation(uniformName), value);
+    void setUniform(std::string uniformName, glm::vec4 &value) {
+        setUniform(getUniformLocation(uniformName), value);
     }
-    void setUniformM4F(std::string uniformName, glm::mat4 &value) {
-        setUniformM4F(getUniformLocation(uniformName), value);
-    }
-
-    void setUniformUI(int location, unsigned int value);
-    void setUniform2UI(int location, glm::uvec2 &value);
-    void setUniform3UI(int location, glm::uvec3 &value);
-    void setUniform4UI(int location, glm::uvec4 &value);
-
-    void setUniformUI(std::string uniformName, unsigned int value) {
-        setUniformUI(getUniformLocation(uniformName), value);
-    }
-    void setUniform2UI(std::string uniformName, glm::uvec2 &value) {
-        setUniform2UI(getUniformLocation(uniformName), value);
-    }
-    void setUniform3UI(std::string uniformName, glm::uvec3 &value) {
-        setUniform3UI(getUniformLocation(uniformName), value);
-    }
-    void setUniform4UI(std::string uniformName, glm::uvec4 &value) {
-        setUniform4UI(getUniformLocation(uniformName), value);
+    void setUniform(std::string uniformName, glm::mat4 &value) {
+        setUniform(getUniformLocation(uniformName), value);
     }
 
-    inline void printShaderSources() {
-        std::cout << "Vertex Shader Source:" << this->shaderSources[0]
-                  << std::endl;
-        std::cout << "Fragment Shader Source:" << this->shaderSources[1]
-                  << std::endl;
+    void setUniform(int location, unsigned int value);
+    void setUniform(int location, glm::uvec2 &value);
+    void setUniform(int location, glm::uvec3 &value);
+    void setUniform(int location, glm::uvec4 &value);
+    void setUniform(std::string uniformName, unsigned int value) {
+        setUniform(getUniformLocation(uniformName), value);
+    }
+    void setUniform(std::string uniformName, glm::uvec2 &value) {
+        setUniform(getUniformLocation(uniformName), value);
+    }
+    void setUniform(std::string uniformName, glm::uvec3 &value) {
+        setUniform(getUniformLocation(uniformName), value);
+    }
+    void setUniform(std::string uniformName, glm::uvec4 &value) {
+        setUniform(getUniformLocation(uniformName), value);
     }
 
-    void bindUniform();
+    // static
+
+    ShaderUniform getUniform(std::string uniformName);
 
   private:
     unsigned int programID;
     unsigned int shaderIDs[N_SHADER_TYPES];
     std::string *shaderSources;
+    std::vector<ShaderUniform> uniforms;
+
+    // static functions
+    static void AddUniformToLookup(std::string name, ShaderProgram *program) {
+        uniformsLookup[name].push_back(program);
+    }
+
+    static void RemoveUniformFromLookup(std::string name,
+                                        ShaderProgram *program) {
+        auto &programs = uniformsLookup[name];
+        for (auto it = programs.begin(); it != programs.end(); it++) {
+            if (*it == program) {
+                programs.erase(it);
+                break;
+            }
+        }
+    }
+
+    static std::unordered_map<std::string, std::vector<ShaderProgram *>>
+        uniformsLookup;
+
+  public:
+    template <typename T>
+    static void setUniformAll(std::string name, T &value) {
+        std::vector<ShaderProgram *> vector = uniformsLookup.at(name);
+        for (auto i = 0; i < vector.size(); i++) {
+            vector[i]->setUniform(name, value);
+        }
+    }
 };
 
 #endif // SHADERS_H_
