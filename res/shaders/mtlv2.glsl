@@ -28,47 +28,54 @@ void main() {
 
 #FRAGMENT
 #version 450 core
-precision highp float;
-
-uniform vec3 u_lightColor;
-uniform vec3 u_viewPos;
-
-// from material
+// material properties
 uniform vec3 mat_ambient;
 uniform vec3 mat_diffuse;
 uniform vec3 mat_emissive;
 uniform vec3 mat_specular;
 uniform float mat_shininess;
 uniform float mat_transparency;
-// ignored for now
-// uniform float mat_refractivity;
-// uniform float mat_illumno
+uniform float mat_refractivity;
+uniform uint mat_illumno;
+
+uniform vec3 u_lightColor;
+uniform vec3 u_viewPos;
 
 in vec3 v_surfacenormal;
 in vec3 v_lightdirection;
 in vec3 v_fagpos;
 in vec2 v_texCoords;
-// Texture
+
 uniform sampler2D u_texture;
 
 out vec4 color;
+
 void main(){
 
-    vec3 ambient = u_lightColor * mat_ambient;
+    vec3 ambient = mat_ambient * u_lightColor;
 
-    // diffuse
-    vec3 norm = normalize(v_surfacenormal);
-    vec3 lightDir = normalize(v_lightdirection - v_fagpos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = u_lightColor * (diff * mat_diffuse);
+    vec3 normal = normalize(v_surfacenormal);
+    vec3 lightDir = normalize(v_lightdirection);
+    float dotproduct = dot(lightDir, normal);
+    dotproduct = max(dotproduct, 0.1);
 
-    // specular
+    vec3 diffuse = dotproduct * ambient;
+    if (mat_diffuse != vec3(0.0)) {
+        diffuse = diffuse * mat_diffuse;
+    }
+
+    if (mat_illumno == 1){
+        color = vec4(diffuse , 1.0) * texture(u_texture, v_texCoords);
+        return;
+    }
+
     vec3 viewDir = normalize(u_viewPos - v_fagpos);
-    vec3 reflectDir = reflect(-lightDir, norm);
+    vec3 reflectDir = reflect(lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), mat_shininess);
-    vec3 specular = u_lightColor * (spec * mat_specular);
+    vec3 specular = u_lightColor * spec * u_lightColor * mat_specular;
+    specular = specular * mat_specular;
 
-    vec3 result = (ambient + diffuse + specular + mat_emissive);
+    vec3 light = diffuse + specular +mat_emissive;
+    color= vec4(light, 1.0) * texture(u_texture, v_texCoords);
 
-    color = vec4(result, 1.0) * texture(u_texture, v_texCoords);
 }

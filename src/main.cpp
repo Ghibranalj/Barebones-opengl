@@ -43,7 +43,7 @@ int main() {
     Window::setInputCallback(inputCallback);
     {
         // auto object = Mesh("res/model/monkey.obj");
-        auto shader = ShaderProgram("mtl.glsl");
+        auto shader = ShaderProgram("mtlv2.glsl");
 
         auto mdl = Model("monkey");
 
@@ -52,9 +52,9 @@ int main() {
 
         // warm yellow
         glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-        glm::vec3 lightPos(0.0f, 0.0f, -5.0f);
+        glm::vec3 lightPos(0.0f, 0.0f, 6.0f);
 
-        glm::vec3 cameraPos(0.0f, 0.0f, -5.0f);
+        glm::vec3 cameraPos(0.0f, 0.0f, 10.0f);
 
         float frame = 0.0f;
         glEnable(GL_CULL_FACE);
