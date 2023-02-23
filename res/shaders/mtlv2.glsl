@@ -15,6 +15,7 @@ out vec3 v_surfacenormal;
 out vec3 v_lightdirection;
 out vec3 v_fagpos;
 out vec2 v_texCoords;
+out vec3 v_color;
 
 void main() {
     vec4 worldPos = u_model * vec4(position, 1.0);
@@ -60,9 +61,8 @@ void main(){
     dotproduct = max(dotproduct, 0.1);
 
     vec3 diffuse = dotproduct * ambient;
-    if (mat_diffuse != vec3(0.0)) {
-        diffuse = diffuse * mat_diffuse;
-    }
+   
+    diffuse = diffuse * mat_diffuse;
 
     if (mat_illumno == 1){
         color = vec4(diffuse , 1.0) * texture(u_texture, v_texCoords);
@@ -77,5 +77,4 @@ void main(){
 
     vec3 light = diffuse + specular +mat_emissive;
     color= vec4(light, 1.0) * texture(u_texture, v_texCoords);
-
 }

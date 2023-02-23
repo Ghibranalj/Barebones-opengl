@@ -1,7 +1,6 @@
 #include "log.hpp"
 #include "model.hpp"
 #include "shaders.hpp"
-#include "texture.hpp"
 #include "window.hpp"
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -38,13 +37,11 @@ void inputCallback(int key, int scancode, int action, int mods) {
 }
 
 int main() {
-
     Window::init(1000, 800, "Hello World", false);
     Window::setInputCallback(inputCallback);
     {
-        // auto object = Mesh("res/model/monkey.obj");
+        // auto object Mesh("res/model/monkey.obj");
         auto shader = ShaderProgram("mtlv2.glsl");
-
         auto mdl = Model("monkey");
 
         int width, height;

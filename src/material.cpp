@@ -10,12 +10,21 @@ Material::Material(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular,glm:
     this->diffuseColor = diffuse;
     this->specularColor = specular;
     this->specularExponent = specularExponent;
-    LOG("Specular exponent:" << specularExponent);
     this->transparency = transparency;
     this->refractiveIndex = refractiveIndex;
     this->illumno = illumno;
     this->KdPath = KdPath;
     this->emissive = emisive;
+
+    if (this->ambientColor == glm::vec3(0.0f, 0.0f, 0.0f)) {
+        this->ambientColor =  glm::vec3(0.2f, 0.2f, 0.2f);
+    }
+    if (this->diffuseColor == glm::vec3(0.0f, 0.0f, 0.0f)) {
+        this->diffuseColor =  glm::vec3(0.8f, 0.8f, 0.8f);
+    }
+    if (this->specularColor == glm::vec3(0.0f, 0.0f, 0.0f)) {
+        this->specularColor =  glm::vec3(1.0f, 1.0f, 1.0f);
+    }
 
     loadTexture();
 }
@@ -24,6 +33,7 @@ void Material::loadTexture() {
 
     int width, height, channels;
 
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *data =
         stbi_load(KdPath.c_str(), &width, &height, &channels, 0);
     if (!data) {
@@ -53,11 +63,14 @@ void Material::loadTexture() {
 
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    stbi_image_free(data);
 }
 
 Material::~Material() {
     glDeleteTextures(1, &id);
 }
+
 void Material::use(ShaderProgram & shader,unsigned int textureUnit) {
     writeUniforms(shader);
     glActiveTexture(GL_TEXTURE0 + textureUnit);
