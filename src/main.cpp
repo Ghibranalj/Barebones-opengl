@@ -51,7 +51,7 @@ int main() {
         glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
         glm::vec3 lightPos(0.0f, 0.0f, 6.0f);
 
-        glm::vec3 cameraPos(0.0f, 0.0f, 10.0f);
+        glm::vec3 cameraPos(0.0f, 0.0f, 3.4f);
 
         float frame = 0.0f;
         glEnable(GL_CULL_FACE);
@@ -71,17 +71,15 @@ int main() {
                                 glm::vec3(0.0f, 1.0f, 0.0f));
 
             glm::mat4 view = glm::mat4(1.0f);
+            auto viewPos = -cameraPos;
+            view = glm::translate(view, viewPos);
             shader.use();
-            cameraPos.x = camx;
-            cameraPos.z = camy;
-            view = glm::translate(view, cameraPos);
-
             shader.setUniform("u_model", model);
             shader.setUniform("u_view", view);
             shader.setUniform("u_projection", projection);
             shader.setUniform("u_lightPos", lightPos);
             shader.setUniform("u_lightColor", lightColor);
-            shader.setUniform("u_viewPos", cameraPos);
+            shader.setUniform("u_viewPos", viewPos);
 
             // object.draw();
             mdl.draw(shader);
