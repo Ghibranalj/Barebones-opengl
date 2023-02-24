@@ -37,7 +37,7 @@ class ShaderProgram {
     void use();
     void unuse();
 
-    int getUniformLocation(std::string &uniformName);
+    int getUniformLocation(const std::string &uniformName);
     void setUniform(int location, float value);
     void setUniform(int location, glm::vec2 &value);
     void setUniform(int location, glm::vec3 &value);
@@ -76,6 +76,8 @@ class ShaderProgram {
         setUniform(getUniformLocation(uniformName), value);
     }
 
+    void setUniform(int location, int value);
+
     // static
 
     ShaderUniform getUniform(std::string uniformName);
@@ -84,35 +86,7 @@ class ShaderProgram {
     unsigned int programID;
     unsigned int shaderIDs[N_SHADER_TYPES];
     std::string *shaderSources;
-    std::vector<ShaderUniform> uniforms;
-
-    // static functions
-    static void AddUniformToLookup(std::string name, ShaderProgram *program) {
-        uniformsLookup[name].push_back(program);
-    }
-
-    static void RemoveUniformFromLookup(std::string name,
-                                        ShaderProgram *program) {
-        auto &programs = uniformsLookup[name];
-        for (auto it = programs.begin(); it != programs.end(); it++) {
-            if (*it == program) {
-                programs.erase(it);
-                break;
-            }
-        }
-    }
-
-    static std::unordered_map<std::string, std::vector<ShaderProgram *>>
-        uniformsLookup;
-
-  public:
-    template <typename T>
-    static void setUniformAll(std::string name, T &value) {
-        std::vector<ShaderProgram *> vector = uniformsLookup.at(name);
-        for (auto i = 0; i < vector.size(); i++) {
-            vector[i]->setUniform(name, value);
-        }
-    }
+    // std::vector<ShaderUniform> uniforms;
 };
 
 #endif // SHADERS_H_

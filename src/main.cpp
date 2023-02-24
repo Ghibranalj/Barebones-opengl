@@ -42,14 +42,14 @@ int main() {
     {
         // auto object Mesh("res/model/monkey.obj");
         auto shader = ShaderProgram("mtlv2.glsl");
-        auto mdl = Model("monkey");
+        auto mdl = Model("box-wood");
 
         int width, height;
         glm::mat4 projection;
 
         // warm yellow
         glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-        glm::vec3 lightPos(0.0f, 0.0f, 6.0f);
+        glm::vec3 lightPos(2.0f, 0.0f, 6.0f);
 
         glm::vec3 cameraPos(0.0f, 0.0f, 3.4f);
 

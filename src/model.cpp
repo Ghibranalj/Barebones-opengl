@@ -26,6 +26,7 @@ Model::Model(const std::string &name) {
         float refractionIndex;
         unsigned int illumno;
         std::string kdPath;
+        std::string ksPath;
     };
 
     std::vector<mat> mats;
@@ -69,7 +70,6 @@ Model::Model(const std::string &name) {
             sscanf(line.c_str(), "d %f", &transparency);
             mats[index].transparency = transparency;
         }
-
         if (token == "Ni") {
             float refractionIndex = 0;
             sscanf(line.c_str(), "Ni %f", &refractionIndex);
@@ -84,19 +84,24 @@ Model::Model(const std::string &name) {
             std::string kdPath = line.substr(line.find(delim) + 1);
             mats[index].kdPath = kdPath;
         }
+
+        if (token == "map_Ks") {
+            std::string ksPath = line.substr(line.find(delim) + 1);
+            mats[index].ksPath = ksPath;
+        }
     }
     for (auto &m : mats) {
         auto material = std::make_shared<Material>(
             m.ambient, m.diffuse, m.specular,m.emissive ,m.specularExponent,
             m.transparency, m.refractionIndex, m.illumno,
-            MODEL_PATH + m.kdPath);
+            MODEL_PATH + m.kdPath, MODEL_PATH + m.ksPath);
         materials.push_back(material);
     }
 }
 
 void Model::draw(ShaderProgram &shader) {
     for (int i = 0; i < materials.size(); i++) {
-        materials[i]->use(shader, 0);
+        materials[i]->use(shader);
         shader.use();
         mesh->draw();
     }

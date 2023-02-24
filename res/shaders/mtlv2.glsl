@@ -29,15 +29,19 @@ void main() {
 
 #FRAGMENT
 #version 450 core
-// material properties
-uniform vec3 mat_ambient;
-uniform vec3 mat_diffuse;
-uniform vec3 mat_emissive;
-uniform vec3 mat_specular;
-uniform float mat_shininess;
-uniform float mat_transparency;
-uniform float mat_refractivity;
-uniform uint mat_illumno;
+
+uniform struct material_s{
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 emissive;
+    vec3 specular;
+    float shininess;
+    float transparency;
+    uint illumno;
+    // texture
+    sampler2D diffuseMap;
+    sampler2D specularMap;
+} material;
 
 uniform vec3 u_lightColor;
 uniform vec3 u_viewPos;
@@ -47,13 +51,11 @@ in vec3 v_lightdirection;
 in vec3 v_fagpos;
 in vec2 v_texCoords;
 
-uniform sampler2D u_texture;
-
 out vec4 color;
 
 void main(){
 
-    vec3 ambient = mat_ambient * u_lightColor;
+    vec3 ambient = material.ambient * u_lightColor;
 
     vec3 normal = normalize(v_surfacenormal);
     vec3 lightDir = normalize(v_lightdirection);
@@ -61,20 +63,21 @@ void main(){
     dotproduct = max(dotproduct, 0.1);
 
     vec3 diffuse = dotproduct * ambient;
-   
-    diffuse = diffuse * mat_diffuse;
+    diffuse = diffuse * material.diffuse * texture(material.diffuseMap, v_texCoords).rgb;
 
-    if (mat_illumno == 1){
-        color = vec4(diffuse , 1.0) * texture(u_texture, v_texCoords);
+    if (material.illumno == 1){
+        color = vec4(diffuse , 1.0);
         return;
     }
 
     vec3 viewDir = normalize(u_viewPos - v_fagpos);
     vec3 reflectDir = reflect(lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), mat_shininess);
-    vec3 specular = u_lightColor * spec * u_lightColor * mat_specular;
-    specular = specular * mat_specular;
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = u_lightColor * spec * u_lightColor * material.specular;
+    specular = specular * material.specular;
 
-    vec3 light = diffuse + specular +mat_emissive;
-    color= vec4(light, 1.0) * texture(u_texture, v_texCoords);
+    specular = specular * texture(material.specularMap, v_texCoords).rgb;
+
+    vec3 light = diffuse + specular + material.emissive;
+    color= vec4(light, 1.0);
 }

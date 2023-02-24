@@ -8,9 +8,6 @@
 #include <regex>
 #include <unordered_map>
 
-//declare static variables
-std::unordered_map<std::string, std::vector<ShaderProgram *>> ShaderProgram::uniformsLookup;
-
 static std::regex uniformRegex("uniform\\s+(\\w+)\\s+(\\w+);");
 
 ShaderProgram::ShaderProgram(std::string name) {
@@ -28,7 +25,7 @@ ShaderProgram::ShaderProgram(std::string name) {
     std::string *sources = new std::string[N_SHADER_TYPES];
 
     ShaderType type = ShaderType::NONE;
-    std::unordered_map<std::string, bool> uniformNames;
+    // std::unordered_map<std::string, bool> uniformNames;
 
     while (std::getline(file, line)) {
         if (line == VERTEX_HEADER) {
@@ -49,19 +46,19 @@ ShaderProgram::ShaderProgram(std::string name) {
         sources[(int)type] += line + "\n";
 
         // find uniforms
-        std::smatch match;
-        if (std::regex_search(line, match, uniformRegex)) {
-            std::string type = match[1];
-            std::string name = match[2];
-            if (uniformNames.find(name) != uniformNames.end()) {
-                continue;
-            }
-            uniformNames[name] = true;
-            ShaderUniform uniform;
-            uniform.name = name;
-            uniform.type = type;
-            uniforms.push_back(uniform);
-        }
+        // std::smatch match;
+        // if (std::regex_search(line, match, uniformRegex)) {
+        //     std::string type = match[1];
+        //     std::string name = match[2];
+        //     if (uniformNames.find(name) != uniformNames.end()) {
+        //         continue;
+        //     }
+        //     uniformNames[name] = true;
+        //     ShaderUniform uniform;
+        //     uniform.name = name;
+        //     uniform.type = type;
+        //     uniforms.push_back(uniform);
+        // }
     }
     this->shaderSources = sources;
 
@@ -91,17 +88,10 @@ ShaderProgram::ShaderProgram(std::string name) {
 
     glLinkProgram(this->programID);
 
-    for (auto uniform : this->uniforms) {
-        AddUniformToLookup(uniform.name, this);
-    }
 }
 
 ShaderProgram::~ShaderProgram() {
 
-    // remvoe this program from the lookup table
-    for (auto uniform : this->uniforms) {
-        RemoveUniformFromLookup(uniform.name, this);
-    }
 
     delete[] this->shaderSources;
     glDeleteProgram(this->programID);
@@ -115,7 +105,7 @@ void ShaderProgram::unuse() {
     glUseProgram(0);
 }
 
-int ShaderProgram::getUniformLocation(std::string& name) {
+int ShaderProgram::getUniformLocation(const std::string& name) {
     return glGetUniformLocation(this->programID, name.c_str());
 }
 
@@ -180,10 +170,18 @@ void ShaderProgram::setUniform(int location, glm::uvec4 &value) {
 }
 
 ShaderUniform ShaderProgram::getUniform(std::string name) {
-    for (auto uniform : this->uniforms) {
-        if (uniform.name == name) {
-            return uniform;
-        }
-    }
+    // for (auto uniform : this->uniforms) {
+    //     if (uniform.name == name) {
+    //         return uniform;
+    //     }
+    // }
     return ShaderUniform{"", ""};
+}
+
+
+void ShaderProgram::setUniform(int location, int value) {
+    if (location == -1) {
+        return;
+    }
+    glUniform1i(location, value);
 }

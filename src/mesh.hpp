@@ -22,9 +22,6 @@ class Mesh {
     Mesh(std::string objFile);
     Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices);
     // copy constructor
-    Mesh(const Mesh &mesh) {
-        init(*mesh.vertices, *mesh.indices);
-    }
     ~Mesh();
     void draw();
 
@@ -32,8 +29,7 @@ class Mesh {
     void init(std::vector<Vertex> &vertices,
               std::vector<unsigned int> &indices);
     unsigned int VAO, VBO, EBO;
-    std::unique_ptr<std::vector<Vertex>> vertices;
-    std::unique_ptr<std::vector<unsigned int>> indices;
+    int numIndices;
 };
 
 #endif // MESH_H_

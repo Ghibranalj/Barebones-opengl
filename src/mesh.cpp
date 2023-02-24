@@ -144,8 +144,9 @@ void Mesh::init(std::vector<Vertex> &vertices,
     VBO = vbo;
     EBO = ebo;
     // copy vertex in the heap
-    this->vertices = std::make_unique<std::vector<Vertex>>(vertices);
-    this->indices = std::make_unique<std::vector<unsigned int>>(indices);
+    // this->vertices = std::make_unique<std::vector<Vertex>>(vertices);
+    // this->indices = std::make_unique<std::vector<unsigned int>>(indices);
+    this->numIndices = indices.size();
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -154,7 +155,7 @@ void Mesh::init(std::vector<Vertex> &vertices,
 
 void Mesh::draw() {
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices->size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 }
 
 Mesh::~Mesh() {
