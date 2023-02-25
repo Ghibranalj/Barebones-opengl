@@ -72,12 +72,14 @@ void main(){
 
     vec3 viewDir = normalize(u_viewPos - v_fagpos);
     vec3 reflectDir = reflect(lightDir, normal);
+
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = u_lightColor * spec * u_lightColor * material.specular;
+    vec3 specular = u_lightColor * spec * material.specular;
     specular = specular * material.specular;
 
     specular = specular * texture(material.specularMap, v_texCoords).rgb;
 
-    vec3 light = diffuse + specular + material.emissive;
+    vec3 light = specular + diffuse + material.emissive;
     color= vec4(light, 1.0);
 }
+

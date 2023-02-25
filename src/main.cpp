@@ -13,6 +13,7 @@ int direction = 1;
 float camx = 0.0f;
 float camy = 0.0f;
 float rotation = 0.0f;
+bool blinn = false;
 
 void inputCallback(int key, int scancode, int action, int mods) {
 
@@ -34,6 +35,10 @@ void inputCallback(int key, int scancode, int action, int mods) {
     if (key == Key(ESCAPE) && act) {
         Window::close();
     }
+    if (key == Key(SPACE) && act) {
+        blinn = !blinn;
+        LOG("Blinn:" << blinn);
+    }
 }
 
 int main() {
@@ -41,17 +46,17 @@ int main() {
     Window::setInputCallback(inputCallback);
     {
         // auto object Mesh("res/model/monkey.obj");
-        auto shader = ShaderProgram("mtlv2.glsl");
-        auto mdl = Model("box-wood");
+        auto shader = ShaderProgram("bp.glsl");
+        auto mdl = Model("monkey");
 
         int width, height;
         glm::mat4 projection;
 
         // warm yellow
         glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-        glm::vec3 lightPos(2.0f, 0.0f, 6.0f);
+        glm::vec3 lightPos(0.0f, 1.5f, 3.0f);
 
-        glm::vec3 cameraPos(0.0f, 0.0f, 3.4f);
+        glm::vec3 cameraPos(0.0f, 0.0f, 3.0f);
 
         float frame = 0.0f;
         glEnable(GL_CULL_FACE);
@@ -67,6 +72,8 @@ int main() {
 
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+            // rotate around x axis
+            // model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
             model = glm::rotate(model, glm::radians(frame),
                                 glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -80,6 +87,11 @@ int main() {
             shader.setUniform("u_lightPos", lightPos);
             shader.setUniform("u_lightColor", lightColor);
             shader.setUniform("u_viewPos", viewPos);
+            if (blinn) {
+                shader.setUniform("u_blinn", (unsigned int)1);
+            } else {
+                shader.setUniform("u_blinn", (unsigned int) 0);
+            }
 
             // object.draw();
             mdl.draw(shader);
